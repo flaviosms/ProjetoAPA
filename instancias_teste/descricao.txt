@@ -3,6 +3,7 @@ Como interpretar os arquivos:
 -) O número de vértices pode ser encontrado no campo DIMENSION.
 -) O número de veículos pode ser encontrado no campo VEHICLES.
 -) A capacidade de cada veículo pode ser encontrada no campo CAPACITY.
+-) A demanda de cada cliente pode ser encontrada no campo DEMAND_SECTION.
 -) A matriz de custos pode ser encontrada no campo EDGE_WEIGHT_SECTION.
 
 Soluções ótimas
