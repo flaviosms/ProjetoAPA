@@ -86,16 +86,67 @@ def construcaoGulosa(distm,demandm,cap,outroscaminhos):
     caminho.append(0)
     return caminho
 
-dim,veic,cap,demandm,distm = getInfo("instancias_teste\P-n23-k8.txt")
+def movimentoVizinhanca(caminhos,distm,demandm,cap,iteracoes):
+    for index1,caminho1 in enumerate(caminhos):
+        for caminho2 in caminhos[index1+1:]:
+            caminho1temp=caminho1
+            caminho2temp=caminho2
+            exclusoes=[]
+            for i in range(0,iteracoes):
+                minimo=0
+                minIndex=[0,0]
+                minFlag=1
+                for ponto1 in caminho1:
+                    if(ponto1==0):
+                            continue
+                    for ponto2 in caminho2:
+                        if(ponto2==0):
+                            continue
+                        if(minFlag and not [ponto1,ponto2] in exclusoes):
+                            minimo=distm[ponto1][ponto2]
+                            minIndex=[ponto1,ponto2]
+                            minFlag=0
+                        elif(distm[ponto1][ponto2]<minimo and not [ponto1,ponto2] in exclusoes):
+                            minimo=distm[ponto1][ponto2]
+                            minIndex=[ponto1,ponto2]
+                if(minFlag):
+                    continue
+                DistanciaTotal=getDistance(caminho1,distm)+getDistance(caminho2,distm)
+                caminho1[caminho1.index(minIndex[0])]=minIndex[1]
+                caminho2[caminho2.index(minIndex[1])]=minIndex[0]
+                print(str(isValid(caminho1,demandm,cap)) + "\t"+ str(isValid(caminho2,demandm,cap))+ "\t"+ str(getDistance(caminho1,distm)+getDistance(caminho2,distm)) + "\t"+ str(DistanciaTotal))
+                if(isValid(caminho1,demandm,cap) and isValid(caminho2,demandm,cap)):
+                    print("Trocou")
+                    print([ponto1,ponto2])
+                    exclusoes.append(minIndex)
+                else:
+                    exclusoes.append(minIndex)
+                    caminho1[caminho1.index(minIndex[1])]=minIndex[0]
+                    caminho2[caminho2.index(minIndex[0])]=minIndex[1]
+            if(getDistance(caminho1,distm)+getDistance(caminho2,distm)>= getDistance(caminho1temp,distm)+getDistance(caminho2temp,distm)):
+                caminho1=caminho1temp
+                caminho2=caminho2temp
+                print("Sem ganho")
+                #print(minimo)
+                #print(minIndex)
+                #print(caminho1)
+                #print(caminho2)
+                                
+
+
+dim,veic,cap,demandm,distm = getInfo("instancias_teste\P-n20-k2.txt")
 caminhos=[0 for x in range(veic)]
 outroscaminhos=[]
+todoscaminhos=[]
 distanciatotal=0
 for veiculo in range(0,veic):
     caminhos[veiculo]=construcaoGulosa(distm,demandm,cap,outroscaminhos)
     outroscaminhos+=caminhos[veiculo]
     distanciatotal+=getDistance(caminhos[veiculo],distm)
-    print(caminhos[veiculo])
-    print(getCapacity(caminhos[veiculo],demandm))
-    print(getDistance(caminhos[veiculo],distm))
-print(distanciatotal)
+    todoscaminhos.append(caminhos[veiculo])
+    #print(caminhos[veiculo])
+    #print(getCapacity(caminhos[veiculo],demandm))
+    #print(getDistance(caminhos[veiculo],distm))
+#print(distanciatotal)
+movimentoVizinhanca(todoscaminhos,distm,demandm,cap,99)
     
