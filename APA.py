@@ -35,14 +35,15 @@ def getInfo(caminhoArquivo):
             icounter+=1
     return dim,veic,cap,demandm,distm
 
-def isValid(caminho,demandm,cap):
+def isValid(caminho,demandm,cap): #pega a rota, soma a capacidade dela junto com sua demanda disponível
     capcam=0
     for x in caminho:
         capcam+=demandm[int(x)][1]
     if(capcam>cap):
         return 0
     else:
-        return 1
+        return 1 #não é válido se não melhora a distância ou não tem capacidade
+    
 def allPointsVisited(caminhos,dim):
     pontos=[x for x in range(0,dim-1)]
     for caminho in caminhos:
