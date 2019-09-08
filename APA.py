@@ -1,4 +1,4 @@
-
+caminhoArquivo = "/Users/davi/Downloads/instancias_teste-2/P-n55-k7.txt"
 def getInfo(caminhoArquivo):
     f = open(caminhoArquivo,'r')
     edges=0
@@ -165,7 +165,7 @@ def movimentoVizinhanca(caminhos,distm,demandm,cap,iteracoes):
             else:
                 
                 print("Caminho antes troca:",caminhos[index1],caminhos[index2],getArrayDistance([caminhos[index1],caminhos[index2]],distm),sep='\t')
-                print("Caminho minimo ptro:",caminho1min,caminho2min,getArrayDistance([caminho1min,caminho2min],distm),sep='\t')
+                print("Caminho minimo para troca:",caminho1min,caminho2min,getArrayDistance([caminho1min,caminho2min],distm),sep='\t')
                 caminhos[index1]=[x for x in caminho1min]
                 caminhos[index2]=[x for x in caminho2min]
                 print("Caminho depois troca:",caminhos[index1],caminhos[index2],getArrayDistance([caminhos[index1],caminhos[index2]],distm),sep='\t')
@@ -178,18 +178,20 @@ def movimentoVizinhanca(caminhos,distm,demandm,cap,iteracoes):
                                 
 
 
-dim,veic,cap,demandm,distm = getInfo("instancias_teste\P-n45-k5.txt")
+dim,veic,cap,demandm,distm = getInfo("/Users/davi/Downloads/instancias_teste-2/P-n55-k7.txt")
 caminhos=[0 for x in range(veic)]
 outroscaminhos=[]
 todoscaminhos=[]
 distanciatotal=0
-for veiculo in range(0,veic):
+for veiculo in range(0,veic): #interação para verificar a qtd de veículos disponíveis
     caminhos[veiculo]=construcaoGulosa(distm,demandm,cap,outroscaminhos)
     outroscaminhos+=caminhos[veiculo]
     distanciatotal+=getDistance(caminhos[veiculo],distm)
     todoscaminhos.append(caminhos[veiculo])
     print(caminhos[veiculo])
+    print("AQUI")
     print(getCapacity(caminhos[veiculo],demandm))
+    print("AQUI")
     print(getDistance(caminhos[veiculo],distm))
 #print("todoscaminhos:",len(todoscaminhos),sep='\t')
 if(allPointsVisited(todoscaminhos,dim)):
