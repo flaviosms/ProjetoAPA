@@ -1,11 +1,11 @@
-caminhoArquivo = "/Users/davi/Downloads/instancias_teste-2/P-n55-k7.txt"
+import copy
 def getInfo(caminhoArquivo):
     f = open(caminhoArquivo,'r')
     edges=0
     demand=0
     icounter=0
     jcounter=0
-    for linha in f:
+    for linha in f:       
         if(linha=="\n"):
             continue
         if(not demand):
@@ -105,18 +105,16 @@ def construcaoGulosa(distm,demandm,cap,outroscaminhos):
     caminho.append(0)
     return caminho
 
-def movimentoVizinhanca(caminhos,distm,demandm,cap,iteracoes):
+def trocaVizinhanca(caminhos,distm,demandm,cap,iteracoes):
     teste=0
-    caminhos2=[x for x in caminhos]
     for index1,caminho1 in enumerate(caminhos):
-        for index2,caminho2 in enumerate(caminhos2):
-            if(index2<index1):
+        for index2,caminho2 in enumerate(caminhos):
+            if(index2<=index1):
                 continue
-            #print("index:",index1,index2,sep='\t')
-            caminho1temp=[x for x in caminho1]
-            caminho2temp=[x for x in caminho2]
-            caminho1min=[x for x in caminho1]
-            caminho2min=[x for x in caminho2]
+            caminho1temp=copy.deepcopy(caminho1)
+            caminho2temp=copy.deepcopy(caminho2)
+            caminho1min=copy.deepcopy(caminho1)
+            caminho2min=copy.deepcopy(caminho2)
             exclusoes=[]
             caminhototalmin=0
             for i in range(0,iteracoes):
@@ -138,47 +136,193 @@ def movimentoVizinhanca(caminhos,distm,demandm,cap,iteracoes):
                             minIndex=[ponto1,ponto2]
                 if(minFlag):
                     continue
-                DistanciaTotal=getDistance(caminho1,distm)+getDistance(caminho2,distm)
                 caminho1[caminho1.index(minIndex[0])]=minIndex[1]
                 caminho2[caminho2.index(minIndex[1])]=minIndex[0]
-                
-                
-                #print(str(isValid(caminho1,demandm,cap)) + "\t"+ str(isValid(caminho2,demandm,cap))+ "\t"+ str(getDistance(caminho1,distm)+getDistance(caminho2,distm)) + "\t"+ str(DistanciaTotal))
                 if(isValid(caminho1,demandm,cap) and isValid(caminho2,demandm,cap)):
                     caminhototal=getDistance(caminho1,distm)+getDistance(caminho2,distm)
                     caminhototalmin=getDistance(caminho1min,distm)+getDistance(caminho2min,distm)
-                    #print(caminhototal,caminhototalmin,sep='\t ')
-                    #print(caminhototal,caminhototalmin,sep='\t')
                     if(caminhototal<caminhototalmin):
-                        caminho1min=[x for x in caminho1]
-                        caminho2min=[x for x in caminho2]
+                        caminho1min=copy.deepcopy(caminho1)
+                        caminho2min=copy.deepcopy(caminho2)
                     exclusoes.append(minIndex)
                 else:
                     exclusoes.append(minIndex)
                     caminho1[caminho1.index(minIndex[1])]=int(minIndex[0])
                     caminho2[caminho2.index(minIndex[0])]=int(minIndex[1])
-            #print(getDistance(caminho1min,distm)+getDistance(caminho2min,distm),getDistance(caminho1temp,distm)+getDistance(caminho2temp,distm),sep='\t')
-            if(getDistance(caminho1min,distm)+getDistance(caminho2min,distm)>= getDistance(caminho1temp,distm)+getDistance(caminho2temp,distm)):
-                caminhos[index1]=[x for x in caminho1temp]
-                caminhos[index2+1]=[x for x in caminho2temp]
-                #print("Sem ganho")
-            else:
-                
-                print("Caminho antes troca:",caminhos[index1],caminhos[index2],getArrayDistance([caminhos[index1],caminhos[index2]],distm),sep='\t')
-                print("Caminho minimo para troca:",caminho1min,caminho2min,getArrayDistance([caminho1min,caminho2min],distm),sep='\t')
-                caminhos[index1]=[x for x in caminho1min]
-                caminhos[index2]=[x for x in caminho2min]
-                print("Caminho depois troca:",caminhos[index1],caminhos[index2],getArrayDistance([caminhos[index1],caminhos[index2]],distm),sep='\t')
-                print("\n")
-                #print("Ganho encontrado")
-                #print(minimo)
-                #print(minIndex)
-                #print(caminho1)
-                #print(caminho2)
-                                
+                    continue
+            if(getDistance(caminho1min,distm)+getDistance(caminho2min,distm)< getDistance(caminho1temp,distm)+getDistance(caminho2temp,distm)
+                   and isValid(caminho1min,demandm,cap) and isValid(caminho2min,demandm,cap)):
+                print("DISTANCIAS",getDistance(caminho1min,distm)+getDistance(caminho2min,distm),getDistance(caminho1temp,distm)+getDistance(caminho2temp,distm))
+                caminhos[index1]=copy.deepcopy(caminho1min)
+                caminhos[index2]=copy.deepcopy(caminho2min)
+                #print(caminhos)
+                return caminhos
+
+    return caminhos
 
 
-dim,veic,cap,demandm,distm = getInfo("/Users/davi/Downloads/instancias_teste-2/P-n55-k7.txt")
+
+#=========================================================================================================================================================================================
+def roubaVizinhanca(caminhos,distm,demandm,cap,iteracoes):
+    teste=0
+    for index1,caminho1 in enumerate(caminhos):
+        for index2,caminho2 in enumerate(caminhos):
+            #print(caminhos)
+            if(index2<=index1):
+                continue
+            caminho1temp=copy.deepcopy(caminho1)
+            caminho2temp=copy.deepcopy(caminho2)
+            caminho1min=copy.deepcopy(caminho1)
+            caminho2min=copy.deepcopy(caminho2)
+            exclusoes=[]
+            caminhototalmin=0
+            for i in range(0,iteracoes):
+                caminho1=copy.deepcopy(caminho1min)
+                caminho2=copy.deepcopy(caminho2min)
+                minimo=0
+                minIndex=[0,0]
+                minFlag=1
+                for ponto1 in caminho1:
+                    if(ponto1==0):
+                            continue
+                    for ponto2 in caminho2:
+                        if(ponto2==0):
+                            continue
+                        if(minFlag and not [ponto1,ponto2] in exclusoes):
+                            minimo=distm[ponto1][ponto2]
+                            minIndex=[ponto1,ponto2]
+                            minFlag=0
+                        elif(distm[ponto1][ponto2]<minimo and not [ponto1,ponto2] in exclusoes):
+                            minimo=distm[ponto1][ponto2]
+                            minIndex=[ponto1,ponto2]
+                if(minFlag):
+                    continue
+                inseriu=0
+                for i in [0,1]:
+                    caminho1.insert(caminho1.index(minIndex[0])+i,minIndex[1])
+                    if(i==0):
+                        caminho2.remove(minIndex[1])
+                    if(isValid(caminho1,demandm,cap)):
+                        caminhototal=getDistance(caminho1,distm)
+                        caminhototalmin=getDistance(caminho1min,distm)
+                        if(caminhototal<caminhototalmin):
+                            caminho1min=copy.deepcopy(caminho1)
+                            caminho2min=copy.deepcopy(caminho2)
+                        else:
+                            caminho1=copy.deepcopy(caminho1min)
+                            caminho2=copy.deepcopy(caminho2min)
+                        exclusoes.append(minIndex)
+                        inseriu=1
+                        break
+                    else:
+                        if(i==1):
+                            exclusoes.append(minIndex)
+                        caminho1.remove(minIndex[1])
+                        continue
+                if(not inseriu):
+                    caminho1=copy.deepcopy(caminho1min)
+                    caminho2=copy.deepcopy(caminho2min)
+                    exclusoes.remove(minIndex)
+                    for j in [0,1]:
+                        caminho2.insert(caminho2.index(minIndex[1])+j,minIndex[0])
+                        if(j==0):
+                            caminho1.remove(minIndex[0])
+                        if(isValid(caminho2,demandm,cap)):
+                            caminhototal=getDistance(caminho2,distm)
+                            caminhototalmin=getDistance(caminho2min,distm)
+                            if(caminhototal<caminhototalmin):
+                                caminho1min=copy.deepcopy(caminho1)
+                                caminho2min=copy.deepcopy(caminho2)
+                            else:
+                                caminho1=copy.deepcopy(caminho1min)
+                                caminho2=copy.deepcopy(caminho2min)
+                            exclusoes.append(minIndex)
+                            inseriu=1
+                            break
+                        else:
+                            if(j==1):
+                                exclusoes.append(minIndex)
+                            caminho2.remove(minIndex[0])
+                            continue
+                if(getDistance(caminho1min,distm)+getDistance(caminho2min,distm)< getDistance(caminho1temp,distm)+getDistance(caminho2temp,distm)
+                    and (isValid(caminho1min,demandm,cap) and isValid(caminho2min,demandm,cap))):
+                    #print(caminhos)
+                    caminhos[index1]=copy.deepcopy(caminho1min)
+                    caminhos[index2]=copy.deepcopy(caminho2min)
+                    #print(caminhos)
+                    return caminhos
+    return caminhos
+#=======================================================================================================================================================
+def organizaVizinhanca(caminhos,distm,demandm,cap,iteracoes):
+    teste=0
+    for index1,caminho1 in enumerate(caminhos):
+        caminho1temp=copy.deepcopy(caminho1)
+        caminho1min=copy.deepcopy(caminho1)
+        exclusoes=[]
+        caminhototalmin=0
+        for i in range(0,iteracoes):
+            caminho1=copy.deepcopy(caminho1min)
+            minimo=0
+            minIndex=[0,0]
+            minFlag=1
+            for ponto1 in caminho1:
+                if(ponto1==0):
+                        continue
+                for ponto2 in caminho1:
+                    if(ponto2==0 or ponto1==ponto2):
+                        continue
+                    if(minFlag and not [ponto1,ponto2] in exclusoes):
+                        minimo=distm[ponto1][ponto2]
+                        minIndex=[ponto1,ponto2]
+                        minFlag=0
+                    elif(distm[ponto1][ponto2]<minimo and not [ponto1,ponto2] in exclusoes):
+                        minimo=distm[ponto1][ponto2]
+                        minIndex=[ponto1,ponto2]
+                if(minFlag):
+                    continue
+                caminho1[caminho1.index(minIndex[0])]=minIndex[1]
+                caminho1[caminho1.index(minIndex[1])]=minIndex[0]
+                if(isValid(caminho1,demandm,cap)):
+                    caminhototal=getDistance(caminho1,distm)
+                    caminhototalmin=getDistance(caminho1min,distm)
+                    if(caminhototal<caminhototalmin):
+                        caminho1min=copy.deepcopy(caminho1)
+                    exclusoes.append(minIndex)
+                else:
+                    exclusoes.append(minIndex)
+                    caminho1[caminho1.index(minIndex[1])]=int(minIndex[0])
+                    caminho2[caminho2.index(minIndex[0])]=int(minIndex[1])
+                    continue
+            if(getDistance(caminho1min,distm)< getDistance(caminho1temp,distm)
+                   and isValid(caminho1min,demandm,cap)):
+                #print(caminhos)
+                caminhos[index1]=copy.deepcopy(caminho1min)
+                #print(caminhos)
+                return caminhos
+
+    return caminhos
+
+#===================================================================================
+def VND(caminhos,distm,demandm,cap,iteracoes):
+    todoscaminhos=copy.deepcopy(caminhos)
+    for k in range(0,3):
+        print(k)
+        print("Antes:",getArrayDistance(todoscaminhos,distm))
+        if(k==0):
+            todoscaminhos=trocaVizinhanca(copy.deepcopy(todoscaminhos),distm,demandm,cap,iteracoes)
+        elif(k==1):
+            todoscaminhos=roubaVizinhanca(copy.deepcopy(todoscaminhos),distm,demandm,cap,iteracoes)
+        elif(k==2):
+            todoscaminhos=organizaVizinhanca(copy.deepcopy(todoscaminhos),distm,demandm,cap,iteracoes)
+        print("Depois:",getArrayDistance(todoscaminhos,distm))
+    return todoscaminhos
+
+
+
+#==============================================================================
+import os
+currentfolder=os.getcwd()
+dim,veic,cap,demandm,distm = getInfo(currentfolder+"/instancias_teste/P-n55-k7.txt")
 caminhos=[0 for x in range(veic)]
 outroscaminhos=[]
 todoscaminhos=[]
@@ -188,19 +332,15 @@ for veiculo in range(0,veic): #interação para verificar a qtd de veículos dis
     outroscaminhos+=caminhos[veiculo]
     distanciatotal+=getDistance(caminhos[veiculo],distm)
     todoscaminhos.append(caminhos[veiculo])
-    print(caminhos[veiculo])
-    print("AQUI")
-    print(getCapacity(caminhos[veiculo],demandm))
-    print("AQUI")
-    print(getDistance(caminhos[veiculo],distm))
-#print("todoscaminhos:",len(todoscaminhos),sep='\t')
 if(allPointsVisited(todoscaminhos,dim)):
     print("Todos os pontos foram visitados")
 else:
     print("Pontos deixados de fora")
-#print(distanciatotal)
-#print(todoscaminhos)
-for x in range(0,1):
-    print("Antes:",getArrayDistance(todoscaminhos,distm))
-    movimentoVizinhanca(todoscaminhos,distm,demandm,cap,1000)
-    print("Depois:",getArrayDistance(todoscaminhos,distm))
+for x in range(0,50):
+    #print("Antes:",getArrayDistance(todoscaminhos,distm))
+    todoscaminhos=VND(copy.deepcopy(todoscaminhos),distm,demandm,cap,1000)
+    #print("Depois:",getArrayDistance(todoscaminhos,distm))
+    if(allPointsVisited(todoscaminhos,dim)):
+        print("Todos os pontos foram visitados")
+    else:
+        print("Pontos deixados de fora")
