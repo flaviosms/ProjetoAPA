@@ -281,14 +281,14 @@ def organizaVizinhanca(caminhos,distm,demandm,cap,iteracoes):
         exclusoes=[]
         caminhototalmin=0
         for i in range(0,iteracoes):
-            caminho1=copy.deepcopy(caminho1min)
+            caminho1temp=copy.deepcopy(caminho1)
             minimo=0
             minIndex=[0,0]
             minFlag=1
-            for ponto1 in caminho1:
+            for ponto1 in caminho1temp:
                 if(ponto1==0):
                         continue
-                for ponto2 in caminho1:
+                for ponto2 in caminho1temp:
                     if(ponto2==0 or ponto1==ponto2):
                         continue
                     if(minFlag and not [ponto1,ponto2] in exclusoes):
@@ -300,20 +300,20 @@ def organizaVizinhanca(caminhos,distm,demandm,cap,iteracoes):
                         minIndex=[ponto1,ponto2]
                 if(minFlag):
                     continue
-                caminho1[caminho1.index(minIndex[0])]=minIndex[1]
-                caminho1[caminho1.index(minIndex[1])]=minIndex[0]
+                caminho1temp[caminho1temp.index(minIndex[0])]=minIndex[1]
+                caminho1temp[caminho1temp.index(minIndex[1])]=minIndex[0]
                 if(isValid(caminho1,demandm,cap)):
-                    caminhototal=getDistance(caminho1,distm)
+                    caminhototal=getDistance(caminho1temp,distm)
                     caminhototalmin=getDistance(caminho1min,distm)
                     if(caminhototal<caminhototalmin):
-                        caminho1min=copy.deepcopy(caminho1)
+                        caminho1min=copy.deepcopy(caminho1temp)
                     exclusoes.append(minIndex)
                 else:
                     exclusoes.append(minIndex)
-                    caminho1[caminho1.index(minIndex[1])]=int(minIndex[0])
-                    caminho2[caminho2.index(minIndex[0])]=int(minIndex[1])
+                    caminho1temp[caminho1temp.index(minIndex[1])]=int(minIndex[0])
+                    caminho1temp[caminho1temp.index(minIndex[0])]=int(minIndex[1])
                     continue
-            if(getDistance(caminho1min,distm)< getDistance(caminho1temp,distm)
+            if(getDistance(caminho1min,distm)< getDistance(caminho1,distm)
                    and isValid(caminho1min,demandm,cap)):
                 #print(caminhos)
                 caminhos[index1]=copy.deepcopy(caminho1min)
@@ -452,7 +452,7 @@ for index,file in enumerate(files):
         somTimeHeuris+=timeat
 
         start_time = time.time()
-        caminhoMetaHeuristica=GRASP(distm,demandm,cap,veic,1,10)
+        caminhoMetaHeuristica=GRASP(distm,demandm,cap,veic,1,100)
         timeat = time.time()-start_time
         distat=getArrayDistance(caminhoMetaHeuristica,distm)
         if(distat<melhorCaminhoHeuristica):
